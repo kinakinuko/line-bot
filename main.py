@@ -19,12 +19,12 @@ def get_forecast_summary():
     # 1. きょうの風の予報（一番最初のデータ）
     wind_text = data[0]['timeSeries'][0]['areas'][0]['winds'][0]
     
-    # 2. きょうの最高気温（エリアの temps のうち、日中データの位置を指定）
-    # 朝のデータでは、1番目に今日の最高気温が入ります
+    # 2. きょうの最高気温
+    # 1番目の最高気温を指定
     max_temp = data[0]['timeSeries'][2]['areas'][0]['temps'][1]
     
-    # 3. あすの最低気温（翌朝のデータ）
-    # 朝のデータでは、2番目に明日の最低気温が入ります
+    # 3. 夜にかけての気温
+    # 2番目に気温を指定
     tomorrow_min = data[0]['timeSeries'][2]['areas'][0]['temps'][2]
     
     return {
