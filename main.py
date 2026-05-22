@@ -13,23 +13,23 @@ import requests
 url = "https://api.open-meteo.com/v1/forecast?latitude=34.6938&longitude=135.5011&daily=temperature_2m_max,wind_speed_10m_max&hourly=temperature_2m,relative_humidity_2m,precipitation&timezone=Asia%2FTokyo&forecast_days=3"
 
 def get_forecast_summary():
-    response = requests.get(url)
-    data = response.json()
-    print(data)
+    #response = requests.get(url)
+    #data = response.json()
+    #print(data)
     
     # 1. 今日の最高気温 (dailyの0番目)
-    max_temp = data['daily']['temperature_2m_max'][0]
+    #max_temp = data['daily']['temperature_2m_max'][0]
     
     # 2. 今日の最大風速 (dailyの0番目)
-    max_wind = data['daily']['wind_speed_10m_max'][0]
+    #max_wind = data['daily']['wind_speed_10m_max'][0]
     
     # 3. 今日の夜21時の気温 (hourlyリストの21番目)
-    night_temp = data['hourly']['temperature_2m'][21]
+    #night_temp = data['hourly']['temperature_2m'][21]
     
     return {
-        "max": max_temp,
-        "wind": max_wind,
-        "night": night_temp
+        "max": 25,
+        "wind": 5,
+        "night": 19
     }
 
 
