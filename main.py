@@ -15,6 +15,7 @@ url = "https://api.open-meteo.com/v1/forecast?latitude=34.6938&longitude=135.501
 def get_forecast_summary():
     response = requests.get(url)
     data = response.json()
+    print(data)
     
     # 1. 今日の最高気温 (dailyの0番目)
     max_temp = data['daily']['temperature_2m_max'][0]
