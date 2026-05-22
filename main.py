@@ -21,11 +21,11 @@ def get_forecast_summary():
     
     # 2. きょうの最高気温（エリアの temps のうち、日中データの位置を指定）
     # 朝のデータでは、1番目に今日の最高気温が入ります
-    max_temp = data[0]['timeSeries'][2]['areas'][0]['temps'][0]
+    max_temp = data[0]['timeSeries'][2]['areas'][0]['temps'][1]
     
     # 3. あすの最低気温（翌朝のデータ）
     # 朝のデータでは、2番目に明日の最低気温が入ります
-    tomorrow_min = data[0]['timeSeries'][2]['areas'][0]['temps'][1]
+    tomorrow_min = data[0]['timeSeries'][2]['areas'][0]['temps'][2]
     
     return {
         "max": max_temp,
@@ -42,14 +42,44 @@ def callback():
 
 # 4. LINEでメッセージを受け取ったときの処理
 @handler.add(MessageEvent, message=TextMessage)
-
 def handle_message(event):
     res = get_forecast_summary()
+
+    #最高気温指数
+    max_val = int(res['max'])
+    
+    if max_val >= 35:
+        max_advice = "暑い！涼しい格好で。日傘とサングラス必須！"
+    elif max_val >= 30:
+        max_advice = "半袖で良いと思うよ！"
+    elif max_val >= 25:
+        max_advice = "風通しのよい長袖かな〜七分袖でも良いね"
+    elif max_val >= 20:
+        max_advice = "長袖シャツ１枚でちょうど良い！"
+    elif max_val >= 15:
+        max_advice = "少し肌寒いかも！"
+    else:
+        max_advice = "トレンチコートやジャケットがあると安心"
+
+    #最低気温指数
+    min_val = int(res['tomorrow_min'])
+    
+    if min_val >= 25:
+        min_advice = "夜も暑くて、寝苦しいかも〜"
+    elif min_val >= 20:
+        min_advice = "夜も上着なしで大丈夫そうね"
+    else:
+        min_advice = "羽織るものがあると良いかもね！"
+
+    # LINEに送るメッセージ
     reply_text = (
-        f"【大阪の朝予報】\n"
-        f"🌙あすの最低気温: {res['max']}℃\n"
-        f"☀️あすの最高気温: {res['tomorrow_min']}℃\n"
-        f"🍃きょうの風: {res['wind']}")
+        f"【大阪の朝予報】\n" 
+        f"☀️きょうの最高気温: {res['max']}℃\n"
+        f"🌙夜にかけての気温: {res['tomorrow_min']}℃\n"
+        f"🍃きょうの風: {res['wind']}\n\n"
+        f"🧥【昼間の服装】\n{max_advice}\n\n"
+        f"🧣【夜の服装】\n{min_advice}"
+    )
     
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
