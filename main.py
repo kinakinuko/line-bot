@@ -21,11 +21,11 @@ def get_forecast_summary():
     
     # 2. きょうの最高気温（エリアの temps のうち、日中データの位置を指定）
     # 朝のデータでは、1番目に今日の最高気温が入ります
-    max_temp = data[0]['timeSeries'][2]['areas'][0]['temps'][1]
+    max_temp = data[0]['timeSeries'][2]['areas'][0]['temps'][0]
     
     # 3. あすの最低気温（翌朝のデータ）
     # 朝のデータでは、2番目に明日の最低気温が入ります
-    tomorrow_min = data[0]['timeSeries'][2]['areas'][0]['temps'][2]
+    tomorrow_min = data[0]['timeSeries'][2]['areas'][0]['temps'][1]
     
     return {
         "max": max_temp,
@@ -47,8 +47,8 @@ def handle_message(event):
     res = get_forecast_summary()
     reply_text = (
         f"【大阪の朝予報】\n"
-        f"☀️きょうの最高気温: {res['max']}℃\n"
-        f"🌙あすの最低気温: {res['tomorrow_min']}℃\n"
+        f"🌙あすの最低気温: {res['max']}℃\n"
+        f"☀️あすの最高気温: {res['tomorrow_min']}℃\n"
         f"🍃きょうの風: {res['wind']}")
     
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
