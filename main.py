@@ -10,28 +10,28 @@ handler = WebhookHandler(os.environ.get('LINE_CHANNEL_SECRET'))
 
 #気象庁のデータ取得
 import requests
-url = "https://api.open-meteo.com/v1/forecast?latitude=34.6938&longitude=135.5011&daily=temperature_2m_max,wind_speed_10m_max&hourly=temperature_2m,relative_humidity_2m,precipitation&timezone=Asia%2FTokyo&forecast_days=3"
+jma_url = "https://www.jma.go.jp/bosai/forecast/data/forecast/270000.json"
 
 def get_forecast_summary():
-    #response = requests.get(url)
-    #data = response.json()
-    #print(data)
+    response = requests.get(jma_url)
+    data = response.json()
     
-    # 1. 今日の最高気温 (dailyの0番目)
-    #max_temp = data['daily']['temperature_2m_max'][0]
+    # 1. きょうの風の予報（一番最初のデータ）
+    wind_text = data[0]['timeSeries'][0]['areas'][0]['winds'][0]
     
-    # 2. 今日の最大風速 (dailyの0番目)
-    #max_wind = data['daily']['wind_speed_10m_max'][0]
+    # 2. きょうの最高気温（エリアの temps のうち、日中データの位置を指定）
+    # 朝のデータでは、1番目に今日の最高気温が入ります
+    max_temp = data[0]['timeSeries'][2]['areas'][0]['temps'][1]
     
-    # 3. 今日の夜21時の気温 (hourlyリストの21番目)
-    #night_temp = data['hourly']['temperature_2m'][21]
+    # 3. あすの最低気温（翌朝のデータ）
+    # 朝のデータでは、2番目に明日の最低気温が入ります
+    tomorrow_min = data[0]['timeSeries'][2]['areas'][0]['temps'][2]
     
     return {
-        "max": 25,
-        "wind": 5,
-        "night": 19
+        "max": max_temp,
+        "wind": wind_text,
+        "tomorrow_min": tomorrow_min
     }
-
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -45,7 +45,11 @@ def callback():
 
 def handle_message(event):
     res = get_forecast_summary()
-    reply_text = f"【大阪の予報】\n最高気温: {res['max']}℃\n夜21時の気温: {res['night']}℃\n最大風速: {res['wind']} km/h"
+    reply_text = (
+        f"【大阪の朝予報】\n"
+        f"☀️きょうの最高気温: {res['max']}℃\n"
+        f"🌙あすの最低気温: {res['tomorrow_min']}℃\n"
+        f"🍃きょうの風: {res['wind']}")
     
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
